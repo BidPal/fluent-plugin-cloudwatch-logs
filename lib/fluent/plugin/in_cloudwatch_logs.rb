@@ -3,6 +3,7 @@ require 'fluent/parser'
 
 module Fluent
   require 'fluent/mixin/config_placeholders'
+  require 'multi_json'
 
   class CloudwatchLogsInput < Input
     Plugin.register_input('cloudwatch_logs', self)
@@ -126,7 +127,7 @@ module Fluent
         router.emit(@tag, record[0], record[1])
       else
         time = (event.timestamp / 1000).floor
-        record = JSON.parse(event.message)
+        record = MultiJson.load(event.message)
         router.emit(@tag, time, record)
       end
     end
